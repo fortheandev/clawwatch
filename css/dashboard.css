@@ -109,6 +109,28 @@ body {
     gap: var(--spacing-sm);
 }
 
+.title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.title-text {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.tagline {
+    font-size: 0.75rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+}
+
 .dashboard-title .logo {
     width: 40px;
     height: 40px;

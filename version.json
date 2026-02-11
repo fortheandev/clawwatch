@@ -1,5 +1,5 @@
 {
-  "version": "2.7.1",
+  "version": "2.7.2",
   "updated": "2026-02-10",
-  "changelog": "Fixed Ask Agent button to reliably use getMainAgentName() helper for consistent name display from OpenClaw config."
+  "changelog": "Added witty tagline under ClawWatch title: 'Keep your claws on the pulse.'"
 }

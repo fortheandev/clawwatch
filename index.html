@@ -15,7 +15,7 @@
         })();
     </script>
     
-    <link rel="stylesheet" href="css/dashboard.css?v=40">
+    <link rel="stylesheet" href="css/dashboard.css?v=41">
     
     <!-- EXTENSION POINT: Add additional stylesheets here -->
     <!-- <link rel="stylesheet" href="css/charts.css"> -->
@@ -169,10 +169,13 @@
     <div class="dashboard">
         <!-- Header -->
         <header class="dashboard-header">
-            <h1 class="dashboard-title">
+            <div class="dashboard-title">
                 <img src="assets/favicon.svg" alt="ClawWatch" class="logo">
-                ClawWatch
-            </h1>
+                <div class="title-group">
+                    <h1 class="title-text">ClawWatch</h1>
+                    <span class="tagline">Keep your claws on the pulse.</span>
+                </div>
+            </div>
             
             <div class="header-controls">
                 <div class="header-meta">
@@ -279,7 +282,7 @@
     <!-- Version Display Script -->
     <script>
         (function() {
-            fetch('version.json?v=40')
+            fetch('version.json?v=41')
                 .then(r => r.json())
                 .then(data => {
                     const el = document.getElementById('version-display');
@@ -292,12 +295,12 @@
     </script>
     
     <!-- Scripts (order matters) -->
-    <script src="js/icons.js?v=40"></script>
-    <script src="js/config.js?v=40"></script>
-    <script src="js/api.js?v=40"></script>
-    <script src="js/components.js?v=40"></script>
-    <script src="js/export.js?v=40"></script>
-    <script src="js/app.js?v=40"></script>
+    <script src="js/icons.js?v=41"></script>
+    <script src="js/config.js?v=41"></script>
+    <script src="js/api.js?v=41"></script>
+    <script src="js/components.js?v=41"></script>
+    <script src="js/export.js?v=41"></script>
+    <script src="js/app.js?v=41"></script>
     
     <!-- EXTENSION POINT: Additional scripts -->
     <!-- <script src="js/charts.js"></script> -->
