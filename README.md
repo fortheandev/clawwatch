@@ -137,11 +137,11 @@ Copy `config.example.json` to `config.json` and customize:
   "dashboardToken": "your-secret-token-here",
   "authMode": "login",
   "readOnly": false,
-  "mainAgentName": "Ivy",
+  "mainAgentName": "Assistant",
   "mainAgentEmoji": "🏠",
   "agentEmojis": {
-    "stone": "🪨",
-    "luna": "🌙",
+    "ops": "🔧",
+    "research": "🔍",
     "default": "🤖"
   }
 }

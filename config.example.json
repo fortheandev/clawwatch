@@ -55,10 +55,10 @@
   
   "agentEmojis": {
     "_note": "Map agent names (lowercase) to emojis. 'default' is fallback.",
-    "stone": "🪨",
-    "ash": "🔍", 
-    "luna": "🌙",
-    "slate": "🎨",
+    "ops": "🔧",
+    "research": "🔍",
+    "content": "✏️",
+    "design": "🎨",
     "cron": "⏰",
     "default": "🤖"
   },

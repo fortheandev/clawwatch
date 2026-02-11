@@ -62,12 +62,9 @@ const DEFAULT_CONFIG = {
         }
     },
     
-    // Agent Label Emojis (loaded from server)
+    // Agent Label Emojis (loaded from server config)
+    // Configure your agent emojis in config.json
     agentEmojis: {
-        'stone': '🪨',
-        'ash': '🔍',
-        'luna': '🌙',
-        'slate': '🎨',
         'main': '🏠',
         'cron': '⏰',
         'default': '🤖'

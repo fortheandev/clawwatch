@@ -523,9 +523,9 @@ const Components = {
      * Render session detail modal content
      * @param {Object} session - Session object
      * @param {Array} history - Array of history entries
-     * @param {Object} askIvyContext - Context for Ask Ivy: { task, result, sessionKey }
+     * @param {Object} askAgentContext - Context for Ask Agent: { task, result, sessionKey }
      */
-    sessionDetail(session, history, askIvyContext = {}) {
+    sessionDetail(session, history, askAgentContext = {}) {
         const container = document.createElement('div');
         container.className = 'session-detail';
         container.dataset.type = 'detail';
@@ -565,7 +565,7 @@ const Components = {
                 <span><strong>Size:</strong> ${session.sizeFormatted || this.formatBytes(session.originalSize) || '—'}</span>
                 <span><strong>Started:</strong> ${this.formatTime(session.startedAt || session.updatedAt)}</span>
             </div>
-            ${askIvyContext.task ? `<div class="detail-task"><strong>Task:</strong> ${this.escapeHtml(this.truncate(askIvyContext.task, 200))}</div>` : ''}
+            ${askAgentContext.task ? `<div class="detail-task"><strong>Task:</strong> ${this.escapeHtml(this.truncate(askAgentContext.task, 200))}</div>` : ''}
             <div class="detail-output">
                 <div class="output-header">
                     <span>Output</span>
@@ -573,7 +573,7 @@ const Components = {
                 </div>
                 <div class="output-content">${outputHtml}</div>
             </div>
-            ${this.askIvySection(session, askIvyContext)}
+            ${this.askAgentSection(session, askAgentContext)}
         `;
         
         return container;
@@ -583,9 +583,9 @@ const Components = {
      * Render session result modal content
      * @param {Object} session - Session object
      * @param {Object} result - Result object with content
-     * @param {Object} askIvyContext - Context for Ask Ivy: { task, result, sessionKey }
+     * @param {Object} askAgentContext - Context for Ask Agent: { task, result, sessionKey }
      */
-    sessionResult(session, result, askIvyContext = {}) {
+    sessionResult(session, result, askAgentContext = {}) {
         const container = document.createElement('div');
         container.className = 'session-detail session-result-modal';
         container.dataset.type = 'result';
@@ -614,7 +614,7 @@ const Components = {
                 </div>
                 <button class="btn-close" aria-label="Close">${closeIcon}</button>
             </div>
-            ${askIvyContext.task ? `<div class="detail-task"><strong>Task:</strong> ${this.escapeHtml(this.truncate(askIvyContext.task, 200))}</div>` : ''}
+            ${askAgentContext.task ? `<div class="detail-task"><strong>Task:</strong> ${this.escapeHtml(this.truncate(askAgentContext.task, 200))}</div>` : ''}
             <div class="detail-output">
                 <div class="output-header">
                     <span>Final Result</span>
@@ -622,7 +622,7 @@ const Components = {
                 </div>
                 <div class="output-content result-output">${resultHtml}</div>
             </div>
-            ${this.askIvySection(session, askIvyContext)}
+            ${this.askAgentSection(session, askAgentContext)}
         `;
         
         return container;
@@ -676,11 +676,11 @@ const Components = {
     },
     
     /**
-     * Ask Ivy section for modals
+     * Ask Agent section for modals
      * @param {Object} session - Session object with id, label, status, etc.
      * @param {Object} context - Additional context: { task, result, sessionKey }
      */
-    askIvySection(session, context = {}) {
+    askAgentSection(session, context = {}) {
         const agentName = session.agentName || 'agent';
         const label = session.label || session.id;
         const status = session.status || 'unknown';
@@ -703,27 +703,27 @@ const Components = {
         const copyIcon = typeof Icons !== 'undefined' ? Icons.get('copy', 14) : '';
         
         return `
-            <div class="ask-ivy-section">
-                <button class="ask-ivy-toggle" aria-expanded="false">
-                    <span class="ask-ivy-icon">${messageIcon}</span>
-                    <span class="ask-ivy-label">Ask Ivy about this session</span>
-                    <span class="ask-ivy-arrow">${chevronIcon}</span>
+            <div class="ask-agent-section">
+                <button class="ask-agent-toggle" aria-expanded="false">
+                    <span class="ask-agent-icon">${messageIcon}</span>
+                    <span class="ask-agent-label">Ask ${(CONFIG.server && CONFIG.server.mainAgentName) || 'Agent'} About This Session</span>
+                    <span class="ask-agent-arrow">${chevronIcon}</span>
                 </button>
-                <div class="ask-ivy-form" hidden>
+                <div class="ask-agent-form" hidden>
                     <textarea 
-                        class="ask-ivy-input" 
+                        class="ask-agent-input" 
                         placeholder="What would you like to know about this session?"
                         rows="3"
                     ></textarea>
-                    <div class="ask-ivy-actions">
-                        <button class="btn-ask-ivy-send" title="Copy and open webchat">
+                    <div class="ask-agent-actions">
+                        <button class="btn-ask-agent-send" title="Copy and open webchat">
                             ${externalIcon} Copy & Open Chat
                         </button>
-                        <button class="btn-ask-ivy-copy" title="Just copy to clipboard">
+                        <button class="btn-ask-agent-copy" title="Just copy to clipboard">
                             ${copyIcon}
                         </button>
                     </div>
-                    <input type="hidden" class="ask-ivy-context" 
+                    <input type="hidden" class="ask-agent-context" 
                         data-label="${this.escapeHtml(label)}"
                         data-agent="${this.escapeHtml(agentName)}"
                         data-status="${this.escapeHtml(status)}"

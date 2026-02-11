@@ -21,7 +21,7 @@
 // @name         OpenClaw Webchat Bridge
 // @namespace    https://openclaw.dev
 // @version      1.0
-// @description  Enable Ask Ivy auto-paste from Agent Dashboard
+// @description  Enable Ask Agent auto-paste from Agent Dashboard
 // @match        http://localhost:*/
 // @match        https://*.tail*.ts.net/
 // @match        https://*.tailscale.net/

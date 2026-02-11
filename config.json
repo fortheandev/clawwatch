@@ -8,12 +8,12 @@
     "registryUrl": "https://clawhub.ai/api/skills/clawwatch/latest"
   },
   "agentEmojis": {
-    "stone": "\ud83e\udea8",
-    "ash": "\ud83d\udd0d",
-    "luna": "\ud83c\udf19",
-    "slate": "\ud83c\udfa8",
-    "cron": "\u23f0",
-    "default": "\ud83e\udd16"
+    "ops": "🔧",
+    "research": "🔍",
+    "content": "✏️",
+    "design": "🎨",
+    "cron": "⏰",
+    "default": "🤖"
   },
   "nodeEmojis": {
     "gateway": "\ud83d\udfe2",

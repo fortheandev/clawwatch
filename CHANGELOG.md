@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Dynamic node discovery** - Node dropdown now populated from actual session data
-- Scans all agent session directories (main, atlas, echo, scout, prism)
+- Scans all agent session directories (main and sub-agent directories)
 - Includes nodes from archived sessions
 - Shows gateway status and remote node connection info
 
@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - **Friendly session labels** - Signal groups show readable names instead of encoded IDs
 - **Sub-agent discovery** - Agent dropdown now includes all discovered sub-agents
-- **Cross-agent session list** - Sessions from all agents (Stone, Luna, Ash, Slate) now visible
+- **Cross-agent session list** - Sessions from all agents (all configured sub-agents) now visible
 - Channel name formatting (Signal, WhatsApp, Discord, etc.)
 
 ### Changed
@@ -110,7 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auto-discovered agents** - Dynamic agent list from session data
 - **Auto-discovered nodes** - Dynamic node list from OpenClaw nodes API
 - **Configurable CORS** - Control cross-origin access for production
-- **Ask Ivy integration** - Send context to webchat with one click
+- **Ask Agent integration** - Send context to webchat with one click
 - **Webchat bridge** - BroadcastChannel support for seamless handoff
 - **Export functionality** - Markdown, JSON, Text, HTML export formats
 - **Session search** - Real-time search across sessions

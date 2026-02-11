@@ -112,47 +112,42 @@ const Icons = {
     // Agent Type Icons - Simple, distinct SVG silhouettes
     // Each icon is designed to be recognizable at 36-40px by SHAPE alone
     
-    // Main/Ivy: Crown (leadership, primary agent)
+    // Main: Crown (leadership, primary agent)
     agentMain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18h18v2H3z" fill="currentColor" stroke="none"/><path d="M3 18l3-10 6 5 6-5 3 10"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/><circle cx="12" cy="4" r="1.5" fill="currentColor"/><circle cx="18" cy="6" r="1.5" fill="currentColor"/></svg>`,
     
     // Cron: Loop/cycle arrows (scheduled/recurring)
     agentCron: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.36 6.36"/><path d="M3 12a9 9 0 0 1 15.36-6.36"/><polyline points="21 3 21 9 15 9"/><polyline points="3 21 3 15 9 15"/></svg>`,
     
-    // Stone/Atlas: Hammer (worker, builder)
-    agentStone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6"/><path d="M8.5 5.5l4-2 6 6-2 4"/><path d="M4.5 13.5l6 6"/></svg>`,
+    // Ops: Hammer (worker, builder)
+    agentOps: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6"/><path d="M8.5 5.5l4-2 6 6-2 4"/><path d="M4.5 13.5l6 6"/></svg>`,
     
-    // Luna/Echo: Paintbrush (creative)
-    agentLuna: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3a1 1 0 0 1 0 1.41L10 18.41A2 2 0 0 1 8.59 19H5a1 1 0 0 1-1-1v-3.59a2 2 0 0 1 .59-1.41L16 2.63a1 1 0 0 1 1.41 0z"/><path d="M4 20l3-3"/></svg>`,
+    // Content: Paintbrush (creative)
+    agentContent: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63l3 3a1 1 0 0 1 0 1.41L10 18.41A2 2 0 0 1 8.59 19H5a1 1 0 0 1-1-1v-3.59a2 2 0 0 1 .59-1.41L16 2.63a1 1 0 0 1 1.41 0z"/><path d="M4 20l3-3"/></svg>`,
     
-    // Ash/Scout: Magnifying glass (research, discovery)
-    agentAsh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg>`,
+    // Research: Magnifying glass (research, discovery)
+    agentResearch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><line x1="15" y1="15" x2="21" y2="21"/></svg>`,
     
-    // Slate/Prism: Pencil (design, drafting)
-    agentSlate: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
+    // Design: Pencil (design, drafting)
+    agentDesign: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
     
-    // Agent type icon mapping
+    // Agent type icon mapping (configure your own agents in config.json)
     agentTypes: {
         'main': 'agentMain',
-        'ivy': 'agentMain',
         'cron': 'agentCron',
-        'atlas': 'agentStone',
-        'stone': 'agentStone',
-        'echo': 'agentLuna',
-        'luna': 'agentLuna',
-        'scout': 'agentAsh',
-        'ash': 'agentAsh',
-        'prism': 'agentSlate',
-        'slate': 'agentSlate'
+        'ops': 'agentOps',
+        'research': 'agentResearch',
+        'content': 'agentContent',
+        'design': 'agentDesign'
     },
     
     // Agent-specific colors for visual distinction
     agentColors: {
-        'agentMain': '#ef4444',   // Red - primary/main
-        'agentCron': '#a855f7',   // Purple - scheduled
-        'agentStone': '#22c55e',  // Green - worker
-        'agentLuna': '#3b82f6',   // Blue - creative
-        'agentAsh': '#f97316',    // Orange - research
-        'agentSlate': '#ec4899'   // Pink - design
+        'agentMain': '#ef4444',      // Red - primary/main
+        'agentCron': '#a855f7',      // Purple - scheduled
+        'agentOps': '#22c55e',       // Green - ops/worker
+        'agentContent': '#3b82f6',   // Blue - content/creative
+        'agentResearch': '#f97316',  // Orange - research
+        'agentDesign': '#ec4899'     // Pink - design
     },
     
     /**

@@ -291,10 +291,10 @@ def load_config():
         'mainAgentName': 'Main',
         'mainAgentEmoji': '🏠',
         'agentEmojis': {
-            'stone': '🪨',
-            'ash': '🔍',
-            'luna': '🌙',
-            'slate': '🎨',
+            'ops': '🔧',
+            'research': '🔍',
+            'content': '✏️',
+            'design': '🎨',
             'cron': '⏰',
             'default': '🤖'
         },
@@ -500,9 +500,9 @@ def parse_friendly_session_label(session_key, session_data):
     
     Examples:
     - "agent:main:signal:group:xyz" -> "Signal Group Chat"
-    - "agent:atlas:signal:dm:+15125659449" -> "Signal: +1 512 565 9449"
+    - "agent:main:signal:dm:+1234567890" -> "Signal: +1 234 567 890"
     - "agent:main:discord:dm:username" -> "Discord: username"
-    - "agent:prism:subagent:uuid" -> uses label field or "Subagent Task"
+    - "agent:main:subagent:uuid" -> uses label field or "Subagent Task"
     """
     # If there's already a nice label, use it (but not if it's just the raw key)
     existing_label = session_data.get('label', '')
@@ -534,7 +534,7 @@ def parse_friendly_session_label(session_key, session_data):
                     if len(group_label) < 30 and not re.match(r'^[a-z0-9]{20,}$', group_label.lower()):
                         return f"Signal: {group_label}"
             
-            # Try displayName as fallback (e.g., "signal:g-clawdbot-team")
+            # Try displayName as fallback (e.g., "signal:g-my-team")
             if display_name:
                 if display_name.startswith('signal:g-'):
                     # Extract group name from "signal:g-group-name"
@@ -1282,12 +1282,10 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             agents = set()
             
             # Sub-agent mappings: agent_id -> (display_name, parent_agent)
-            # These are the known sub-agents
+            # These are loaded from openclaw.json config; examples shown for reference
+            # Users should configure their own agent names in openclaw.json
             subagent_info = {
-                'atlas': ('Stone', 'main'),
-                'echo': ('Luna', 'main'),
-                'scout': ('Ash', 'main'),
-                'prism': ('Slate', 'main'),
+                # Example: 'subagent-id': ('Display Name', 'parent'),
             }
             
             # Known agent names from config (always include these)
@@ -1306,7 +1304,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             for agent_id, sessions_dir in agent_session_dirs:
                 sessions_file = sessions_dir / 'sessions.json'
                 
-                # Add the agent ID itself (atlas, echo, scout, prism, main)
+                # Add the agent ID itself (discovered from session directories)
                 if agent_id in subagent_info:
                     # Use the display name for sub-agents
                     agents.add(subagent_info[agent_id][0].lower())
@@ -1327,10 +1325,10 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                     agent_name = None
                     
                     # Check for sub-agent patterns in the key
-                    # e.g., agent:atlas:subagent:uuid, agent:prism:subagent:uuid
+                    # e.g., agent:subagent-id:subagent:uuid
                     key_parts = key.split(':')
                     if len(key_parts) >= 2:
-                        agent_prefix = key_parts[1]  # atlas, echo, scout, prism, main
+                        agent_prefix = key_parts[1]  # agent ID from session key
                         if agent_prefix in subagent_info:
                             agent_name = subagent_info[agent_prefix][0].lower()
                     
@@ -1687,12 +1685,12 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         # Clean up common suffixes
         name = name.replace('.local', '').replace('.attlocal.net', '')
         
-        # Convert "ClawdBot-Mac-mini-1" or "ClawdBot Mac mini 1" to "Mini 1"
+        # Convert "My-Mac-mini-1" or "Mac mini 1" to "Mini 1"
         match = re.search(r'mini[- ]?(\d+)', name, re.IGNORECASE)
         if match:
             return f"Mini {match.group(1)}"
         
-        # Convert "ClawdBot Mac mini 2" style
+        # Convert "Mac mini 2" style
         match = re.search(r'mac\s*mini\s*(\d+)', name, re.IGNORECASE)
         if match:
             return f"Mini {match.group(1)}"
@@ -2008,11 +2006,9 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         main_agent_name = APP_CONFIG.get('mainAgentName', 'Main')
         
         # Sub-agent mappings: agent_id -> display_name
+        # These are loaded from openclaw.json config; no hardcoded defaults
         subagent_names = {
-            'atlas': 'stone',
-            'echo': 'luna',
-            'scout': 'ash',
-            'prism': 'slate',
+            # Example: 'subagent-id': 'display-name',
         }
         
         for s in raw_sessions:
@@ -2026,7 +2022,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             agent_name = None
             label = s.get('label') or s.get('displayName', '')
             
-            # Extract agent ID from key (e.g., agent:atlas:subagent:uuid -> atlas)
+            # Extract agent ID from key (e.g., agent:subagent-id:subagent:uuid -> subagent-id)
             key_parts = key.split(':')
             agent_id_from_key = key_parts[1] if len(key_parts) >= 2 else None
             
@@ -2040,7 +2036,7 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 stored_label = s.get('label', '')
                 if stored_label and not stored_label.startswith('agent:'):
                     label = stored_label
-                    # Extract agent name from label (e.g., "stone-calendar-fixes" -> "stone")
+                    # Extract agent name from label (e.g., "ops-calendar-fixes" -> "ops")
                     if not agent_name:
                         agent_name = stored_label.split('-')[0].lower() if '-' in stored_label else stored_label.lower()
                 else:

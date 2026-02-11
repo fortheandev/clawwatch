@@ -313,18 +313,14 @@ class Dashboard {
     getAgentIconKey(agentName) {
         if (!agentName) return null;
         const name = agentName.toLowerCase();
+        // Agent type mappings - configure your own in config.json
         const typeMap = {
             'main': 'agentMain',
-            'ivy': 'agentMain',
             'cron': 'agentCron',
-            'atlas': 'agentStone',
-            'stone': 'agentStone',
-            'echo': 'agentLuna',
-            'luna': 'agentLuna',
-            'scout': 'agentAsh',
-            'ash': 'agentAsh',
-            'prism': 'agentSlate',
-            'slate': 'agentSlate'
+            'ops': 'agentOps',
+            'research': 'agentResearch',
+            'content': 'agentContent',
+            'design': 'agentDesign'
         };
         return typeMap[name] || null;
     }
@@ -948,7 +944,7 @@ class Dashboard {
             const response = await fetch(`${this.baseUrl}/api/archive/${session.sessionId || sessionKey}/history`);
             const { history, error } = await response.json();
             
-            const askIvyContext = {
+            const askAgentContext = {
                 task: session.task || '',
                 result: history?.length > 0 ? history[history.length - 1]?.content : '',
                 sessionKey: session.key
@@ -959,13 +955,13 @@ class Dashboard {
                 session: session,
                 content: history && history.length > 0 ? history : 'No output available',
                 type: 'detail',
-                task: askIvyContext.task,
-                result: askIvyContext.result,
-                sessionKey: askIvyContext.sessionKey
+                task: askAgentContext.task,
+                result: askAgentContext.result,
+                sessionKey: askAgentContext.sessionKey
             };
             
             // Render detail view
-            const detail = Components.sessionDetail(session, history, askIvyContext);
+            const detail = Components.sessionDetail(session, history, askAgentContext);
             this.elements.modalContent.innerHTML = '';
             this.elements.modalContent.appendChild(detail);
             
@@ -980,7 +976,7 @@ class Dashboard {
             // Bind export dropdown
             this.bindExportDropdown(detail);
             
-            // Bind Ask Ivy section
+            // Bind Ask Agent section
             this.bindAskIvySection(detail);
         } catch (err) {
             this.elements.modalContent.innerHTML = '<div class="error">Failed to load archived session</div>';
@@ -1004,7 +1000,7 @@ class Dashboard {
         const { history, error } = await api.getSessionHistory(sessionId);
         
         // Extract task (first user message) and result (last assistant message) from history
-        const askIvyContext = this.extractAskIvyContext(session, history);
+        const askAgentContext = this.extractAskIvyContext(session, history);
         
         // Store data for export
         const content = history && history.length > 0 ? history : (session.lastOutput || 'No output available');
@@ -1012,13 +1008,13 @@ class Dashboard {
             session: session,
             content: content,
             type: 'detail',
-            task: askIvyContext.task,
-            result: askIvyContext.result,
-            sessionKey: askIvyContext.sessionKey
+            task: askAgentContext.task,
+            result: askAgentContext.result,
+            sessionKey: askAgentContext.sessionKey
         };
         
         // Render detail view
-        const detail = Components.sessionDetail(session, history, askIvyContext);
+        const detail = Components.sessionDetail(session, history, askAgentContext);
         this.elements.modalContent.innerHTML = '';
         this.elements.modalContent.appendChild(detail);
         
@@ -1033,7 +1029,7 @@ class Dashboard {
         // Bind export dropdown
         this.bindExportDropdown(detail);
         
-        // Bind Ask Ivy section
+        // Bind Ask Agent section
         this.bindAskIvySection(detail);
     }
     
@@ -1057,7 +1053,7 @@ class Dashboard {
         ]);
         
         // Extract task and result context
-        const askIvyContext = this.extractAskIvyContext(session, history, result?.content);
+        const askAgentContext = this.extractAskIvyContext(session, history, result?.content);
         
         // Store data for export
         const content = result?.content || 'No result available';
@@ -1065,13 +1061,13 @@ class Dashboard {
             session: session,
             content: content,
             type: 'result',
-            task: askIvyContext.task,
-            result: askIvyContext.result,
-            sessionKey: askIvyContext.sessionKey
+            task: askAgentContext.task,
+            result: askAgentContext.result,
+            sessionKey: askAgentContext.sessionKey
         };
         
         // Render result view
-        const resultEl = Components.sessionResult(session, result, askIvyContext);
+        const resultEl = Components.sessionResult(session, result, askAgentContext);
         this.elements.modalContent.innerHTML = '';
         this.elements.modalContent.appendChild(resultEl);
         
@@ -1086,7 +1082,7 @@ class Dashboard {
         // Bind export dropdown
         this.bindExportDropdown(resultEl);
         
-        // Bind Ask Ivy section
+        // Bind Ask Agent section
         this.bindAskIvySection(resultEl);
     }
     
@@ -1405,15 +1401,15 @@ class Dashboard {
     }
     
     /**
-     * Bind Ask Ivy section functionality
+     * Bind Ask Agent section functionality
      */
     bindAskIvySection(container) {
-        const toggle = container.querySelector('.ask-ivy-toggle');
-        const form = container.querySelector('.ask-ivy-form');
-        const input = container.querySelector('.ask-ivy-input');
-        const sendBtn = container.querySelector('.btn-ask-ivy-send');
-        const copyBtn = container.querySelector('.btn-ask-ivy-copy');
-        const contextEl = container.querySelector('.ask-ivy-context');
+        const toggle = container.querySelector('.ask-agent-toggle');
+        const form = container.querySelector('.ask-agent-form');
+        const input = container.querySelector('.ask-agent-input');
+        const sendBtn = container.querySelector('.btn-ask-agent-send');
+        const copyBtn = container.querySelector('.btn-ask-agent-copy');
+        const contextEl = container.querySelector('.ask-agent-context');
         
         if (!toggle || !form) return;
         
@@ -1523,7 +1519,7 @@ class Dashboard {
     }
     
     /**
-     * Extract Ask Ivy context from session history
+     * Extract Ask Agent context from session history
      * @param {Object} session - Session object
      * @param {Array} history - Array of history entries (optional)
      * @param {string} resultOverride - Override for result text (optional)
@@ -1558,7 +1554,7 @@ class Dashboard {
     }
     
     /**
-     * Format message for Ask Ivy (enhanced format with full context)
+     * Format message for Ask Agent (enhanced format with full context)
      */
     formatAskIvyMessage({ label, agent, status, age, sessionKey, task, result, question }) {
         let message = `Regarding session [${label}]\n`;

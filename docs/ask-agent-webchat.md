@@ -1,12 +1,12 @@
-# Ask Ivy - Webchat Integration
+# Ask Agent - Webchat Integration
 
-The "Ask Ivy" feature in the Agent Dashboard now automatically sends questions to the webchat instead of just copying to clipboard.
+The "Ask Agent" feature in the Agent Dashboard now automatically sends questions to the webchat instead of just copying to clipboard.
 
 ## How It Works
 
 ### Dashboard Side (Automatic)
 
-When you click **🚀 Send to Ivy**:
+When you click **🚀 Send to Agent**:
 
 1. **BroadcastChannel** - Sends the message via browser's BroadcastChannel API (works instantly if webchat is open)
 2. **URL Parameter** - Opens webchat with `?message=...` parameter as fallback
@@ -40,21 +40,21 @@ The script includes proper userscript headers for automatic matching.
 
 If you can't install the webchat bridge:
 
-1. Click **🚀 Send to Ivy** in the dashboard
+1. Click **🚀 Send to Agent** in the dashboard
 2. The webchat opens with your message in the URL
 3. The message text is in the URL (but not auto-filled into the input)
 4. You may need to manually paste (use 📋 button first)
 
 ## Features
 
-### Send to Ivy Button
-- **🚀 Send to Ivy** - Opens webchat with your question pre-filled
+### Send to Agent Button
+- **🚀 Send to Agent** - Opens webchat with your question pre-filled
 - **📋** - Copy to clipboard (fallback option)
 - **⌘/Ctrl+Enter** - Keyboard shortcut to send
 
 ### Context Included
 
-The message sent to Ivy includes:
+The message sent to the agent includes:
 - Session label and key
 - Agent name and status
 - Task (what the agent was asked to do)
@@ -79,7 +79,7 @@ Message format:
 
 Parameter: `message` (URL-encoded)
 
-Example: `http://localhost:5173/?message=Hello%20Ivy`
+Example: `http://localhost:5173/?message=Hello%20Agent`
 
 ## Troubleshooting
 
