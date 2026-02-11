@@ -5,6 +5,39 @@ All notable changes to ClawWatch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-02-10
+
+### Added
+- **Dynamic node discovery** - Node dropdown now populated from actual session data
+- Scans all agent session directories (main, atlas, echo, scout, prism)
+- Includes nodes from archived sessions
+- Shows gateway status and remote node connection info
+
+### Fixed
+- Node filter now shows all nodes across the deployment
+- Launchd service PATH issue - added `/opt/homebrew/bin` for `openclaw` CLI access
+
+## [2.5.0] - 2026-02-10
+
+### Added
+- **Friendly session labels** - Signal groups show readable names instead of encoded IDs
+- **Sub-agent discovery** - Agent dropdown now includes all discovered sub-agents
+- **Cross-agent session list** - Sessions from all agents (Stone, Luna, Ash, Slate) now visible
+- Channel name formatting (Signal, WhatsApp, Discord, etc.)
+
+### Changed
+- Session labels parsed for better readability
+- Agent names pulled from OpenClaw config with emojis
+
+## [2.4.0] - 2026-02-10
+
+### Fixed
+- Keyboard shortcuts now ignore input when typing in text fields
+- Added `isContentEditable` check to prevent "e" key conflicts in edit modals
+
+### Changed
+- Improved keyboard event handling across all input contexts
+
 ## [2.3.0] - 2026-02-10
 
 ### Added
@@ -155,10 +188,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[2.3.0]: https://github.com/openclaw/clawwatch/compare/v2.2.0...v2.3.0
-[2.2.0]: https://github.com/openclaw/clawwatch/compare/v2.1.0...v2.2.0
-[2.1.0]: https://github.com/openclaw/clawwatch/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/openclaw/clawwatch/compare/v1.5.8...v2.0.0
-[1.5.8]: https://github.com/openclaw/clawwatch/compare/v1.5.0...v1.5.8
-[1.5.0]: https://github.com/openclaw/clawwatch/compare/v1.0.0...v1.5.0
-[1.0.0]: https://github.com/openclaw/clawwatch/releases/tag/v1.0.0
+[2.6.0]: https://github.com/fortheandev/clawwatch/compare/v2.5.0...v2.6.0
+[2.5.0]: https://github.com/fortheandev/clawwatch/compare/v2.4.0...v2.5.0
+[2.4.0]: https://github.com/fortheandev/clawwatch/compare/v2.3.0...v2.4.0
+[2.3.0]: https://github.com/fortheandev/clawwatch/compare/v2.2.0...v2.3.0
+[2.2.0]: https://github.com/fortheandev/clawwatch/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/fortheandev/clawwatch/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/fortheandev/clawwatch/compare/v1.5.8...v2.0.0
+[1.5.8]: https://github.com/fortheandev/clawwatch/compare/v1.5.0...v1.5.8
+[1.5.0]: https://github.com/fortheandev/clawwatch/compare/v1.0.0...v1.5.0
+[1.0.0]: https://github.com/fortheandev/clawwatch/releases/tag/v1.0.0
