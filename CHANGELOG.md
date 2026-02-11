@@ -5,6 +5,36 @@ All notable changes to ClawWatch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.7.3] - 2026-02-10
+
+### Fixed
+- Config fetch now uses correct base URL when accessed via `/dashboard` path (Tailscale)
+- "Ask Agent" button now correctly displays configured agent name
+
+## [2.7.2] - 2026-02-10
+
+### Added
+- **Tagline** - "Keep your claws on the pulse." displayed under ClawWatch title
+- Subtle italic styling for tagline
+
+## [2.7.1] - 2026-02-10
+
+### Fixed
+- Agent name display in "Ask Agent" button now uses helper function for consistency
+- Proper fallback chain: configured name → "Main" → "Agent"
+
+## [2.7.0] - 2026-02-10
+
+### Changed
+- **Privacy cleanup** - Removed all personal/example agent names from codebase
+- Generic agent examples: ops, research, content, design
+- "Ask Ivy" renamed to dynamic "Ask {Agent}" based on config
+- All documentation updated with generic examples
+
+### Security
+- Removed example phone numbers from code comments
+- No personal identifiers in public repository
+
 ## [2.6.0] - 2026-02-10
 
 ### Added
@@ -188,6 +218,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[2.7.3]: https://github.com/fortheandev/clawwatch/compare/v2.7.2...v2.7.3
+[2.7.2]: https://github.com/fortheandev/clawwatch/compare/v2.7.1...v2.7.2
+[2.7.1]: https://github.com/fortheandev/clawwatch/compare/v2.7.0...v2.7.1
+[2.7.0]: https://github.com/fortheandev/clawwatch/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/fortheandev/clawwatch/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/fortheandev/clawwatch/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/fortheandev/clawwatch/compare/v2.3.0...v2.4.0
