@@ -1,5 +1,5 @@
 {
-  "version": "2.7.0",
+  "version": "2.7.1",
   "updated": "2026-02-10",
-  "changelog": "Removed personal information from codebase. Dynamic 'Ask Agent' text now uses configured mainAgentName. Generic agent examples in config."
+  "changelog": "Fixed Ask Agent button to reliably use getMainAgentName() helper for consistent name display from OpenClaw config."
 }

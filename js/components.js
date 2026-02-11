@@ -706,7 +706,7 @@ const Components = {
             <div class="ask-agent-section">
                 <button class="ask-agent-toggle" aria-expanded="false">
                     <span class="ask-agent-icon">${messageIcon}</span>
-                    <span class="ask-agent-label">Ask ${(CONFIG.server && CONFIG.server.mainAgentName) || 'Agent'} About This Session</span>
+                    <span class="ask-agent-label">Ask ${typeof getMainAgentName === 'function' ? getMainAgentName() : (CONFIG.server?.mainAgentName || 'Agent')} About This Session</span>
                     <span class="ask-agent-arrow">${chevronIcon}</span>
                 </button>
                 <div class="ask-agent-form" hidden>
