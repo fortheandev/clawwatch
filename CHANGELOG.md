@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Privacy cleanup** - Removed all personal/example agent names from codebase
 - Generic agent examples: ops, research, content, design
-- "Ask Ivy" renamed to dynamic "Ask {Agent}" based on config
+- "Ask Agent" button now dynamically shows configured agent name
 - All documentation updated with generic examples
 
 ### Security
