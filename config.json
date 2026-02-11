@@ -1,0 +1,23 @@
+{
+  "dashboardToken": "",
+  "authMode": "login",
+  "cookieMaxAgeDays": 30,
+  "readOnly": false,
+  "updateCheck": {
+    "enabled": true,
+    "registryUrl": "https://clawhub.ai/api/skills/clawwatch/latest"
+  },
+  "agentEmojis": {
+    "stone": "\ud83e\udea8",
+    "ash": "\ud83d\udd0d",
+    "luna": "\ud83c\udf19",
+    "slate": "\ud83c\udfa8",
+    "cron": "\u23f0",
+    "default": "\ud83e\udd16"
+  },
+  "nodeEmojis": {
+    "gateway": "\ud83d\udfe2",
+    "remote": "\ud83d\udd35",
+    "default": "\ud83d\udda5\ufe0f"
+  }
+}

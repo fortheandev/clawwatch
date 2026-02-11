@@ -1,0 +1,5 @@
+{
+  "retentionDays": 3,
+  "autoArchive": true,
+  "pageSize": 20
+}

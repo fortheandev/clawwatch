@@ -1,0 +1,5 @@
+{
+  "version": "2.6.0",
+  "updated": "2026-02-10",
+  "changelog": "Node filter dropdown now dynamically populated from session data across all agents. Scans all agent directories and archives to discover unique nodes."
+}

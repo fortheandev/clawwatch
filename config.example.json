@@ -1,0 +1,72 @@
+{
+  "_comment": "ClawWatch Configuration - Copy to config.json and customize",
+  "_docs": "All settings have env var equivalents. CLI args > env vars > config.json",
+  
+  "port": 8889,
+  "_port_note": "Server port. Env: CLAWWATCH_PORT or DASHBOARD_PORT. CLI: --port",
+  
+  "sessionPath": "auto",
+  "_sessionPath_note": "Path to sessions directory. 'auto' = detect from OpenClaw. Env: CLAWWATCH_SESSION_PATH",
+  "_sessionPath_examples": [
+    "auto",
+    "~/.openclaw/agents/main/sessions",
+    "/custom/path/to/sessions"
+  ],
+  
+  "openclawHome": "auto",
+  "_openclawHome_note": "OpenClaw base directory. 'auto' = detect via CLI or use ~/.openclaw. Env: OPENCLAW_HOME",
+  
+  "dashboardToken": "",
+  "_dashboardToken_note": "Auth token. Required for 'key', 'login', or 'both' auth modes. Env: CLAWWATCH_TOKEN or DASHBOARD_TOKEN",
+  
+  "authMode": "login",
+  "_authMode_note": "Authentication mode: 'none', 'key', 'login', or 'both'",
+  "_authMode_options": {
+    "none": "No authentication required - dashboard is open to anyone",
+    "key": "URL key auth only - access via ?key=token, sets cookie for subsequent visits",
+    "login": "Login page only - user enters token on login page",
+    "both": "Either method works - supports both URL key and login page"
+  },
+  
+  "cookieMaxAgeDays": 30,
+  "_cookieMaxAgeDays_note": "How long the auth cookie lasts (for 'key' and 'both' modes). Default: 30 days",
+  
+  "readOnly": false,
+  "_readOnly_note": "If true, disables archive/delete operations. Env: DASHBOARD_READ_ONLY. CLI: --read-only",
+  
+  "corsOrigin": null,
+  "_corsOrigin_note": "CORS header. null = same-origin only (recommended), '*' = any origin (dev only)",
+  
+  "updateCheck": {
+    "enabled": true,
+    "registryUrl": "https://clawhub.ai/api/skills/clawwatch/latest"
+  },
+  "_updateCheck_note": "Automatic update checking. Results are cached for 24 hours.",
+  "_updateCheck_options": {
+    "enabled": "true/false - whether to check for updates (default: true)",
+    "registryUrl": "URL to fetch latest version info (default: ClawHub registry)"
+  },
+  
+  "mainAgentName": "Main",
+  "_mainAgentName_note": "Display name for main agent session. Auto-detected from openclaw.json if not set",
+  
+  "mainAgentEmoji": "🏠",
+  "_mainAgentEmoji_note": "Emoji for main agent. Auto-detected from openclaw.json if not set",
+  
+  "agentEmojis": {
+    "_note": "Map agent names (lowercase) to emojis. 'default' is fallback.",
+    "stone": "🪨",
+    "ash": "🔍", 
+    "luna": "🌙",
+    "slate": "🎨",
+    "cron": "⏰",
+    "default": "🤖"
+  },
+  
+  "nodeEmojis": {
+    "_note": "Emojis for node types in filter buttons",
+    "gateway": "🟢",
+    "remote": "🔵",
+    "default": "🖥️"
+  }
+}
