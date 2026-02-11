@@ -145,7 +145,9 @@ loadRefreshInterval();
  */
 async function loadServerConfig() {
     try {
-        const response = await fetch('/api/config');
+        // Use baseUrl for Tailscale /dashboard path support
+        const baseUrl = window.location.pathname.startsWith('/dashboard') ? '/dashboard' : '';
+        const response = await fetch(`${baseUrl}/api/config`);
         if (response.ok) {
             const serverConfig = await response.json();
             
