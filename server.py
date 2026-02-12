@@ -1321,43 +1321,25 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                     continue
                 
                 for key, session in raw_data.items():
-                    # Extract agent name from session key or data
+                    # Extract agent name from session key
+                    # Key format: agent:<agent_id>:<type>:<id>
+                    # e.g., agent:main:subagent:uuid, agent:atlas:subagent:uuid
                     agent_name = None
-                    
-                    # Check for sub-agent patterns in the key
-                    # e.g., agent:subagent-id:subagent:uuid
                     key_parts = key.split(':')
+                    
                     if len(key_parts) >= 2:
                         agent_prefix = key_parts[1]  # agent ID from session key
-                        if agent_prefix in subagent_info:
-                            agent_name = subagent_info[agent_prefix][0].lower()
-                    
-                    if ':spawn:' in key or ':subagent:' in key:
-                        parts = key.split(':spawn:') if ':spawn:' in key else key.split(':subagent:')
-                        if len(parts) > 1:
-                            spawn_label = parts[1]
-                            # Check if spawn label starts with known agent name
-                            spawn_first = spawn_label.split('-')[0].lower()
-                            if spawn_first in known_agents:
-                                agent_name = spawn_first
-                    elif ':cron:' in key:
-                        agent_name = 'cron'
-                    elif key == 'agent:main:main':
-                        agent_name = 'main'
-                    
-                    # Also check label for agent name patterns
-                    label = session.get('label', '')
-                    if label:
-                        label_lower = label.lower()
-                        for known in known_agents:
-                            if label_lower.startswith(known + '-') or label_lower == known:
-                                agent_name = known
-                                break
                         
-                        if not agent_name and '-' in label:
-                            first_word = label.split('-')[0].lower()
-                            if first_word in known_agents:
-                                agent_name = first_word
+                        if ':spawn:' in key or ':subagent:' in key:
+                            # For sub-agent sessions, use the parent agent from the key
+                            agent_name = agent_prefix.lower()
+                        elif ':cron:' in key:
+                            agent_name = 'cron'
+                        elif key == 'agent:main:main':
+                            agent_name = 'main'
+                        elif agent_prefix:
+                            # For other session types, use the agent ID from the key
+                            agent_name = agent_prefix.lower()
                     
                     if agent_name:
                         agents.add(agent_name)
@@ -2032,20 +2014,20 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             
             if ':spawn:' in key or ':subagent:' in key:
                 # Spawn/subagent session
+                # Use the parent agent from the key (e.g., agent:main:subagent:xxx -> main)
+                # This is more accurate than parsing from the label
+                if not agent_name and agent_id_from_key:
+                    agent_name = agent_id_from_key.lower()
+                
                 # Check for stored label first
                 stored_label = s.get('label', '')
                 if stored_label and not stored_label.startswith('agent:'):
                     label = stored_label
-                    # Extract agent name from label (e.g., "ops-calendar-fixes" -> "ops")
-                    if not agent_name:
-                        agent_name = stored_label.split('-')[0].lower() if '-' in stored_label else stored_label.lower()
                 else:
                     # Fallback: parse from key
                     parts = key.split(':spawn:') if ':spawn:' in key else key.split(':subagent:')
                     if len(parts) > 1:
                         spawn_label = parts[1]
-                        if not agent_name:
-                            agent_name = spawn_label.split('-')[0].lower()
                         label = spawn_label
             elif ':cron:' in key:
                 # Cron session: agent:main:cron:uuid
@@ -2063,12 +2045,15 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             elif ':signal:' in key or ':discord:' in key or ':telegram:' in key or ':whatsapp:' in key or ':slack:' in key:
                 # Chat platform sessions - use friendly label parser
                 label = parse_friendly_session_label(key, s)
-                # Still set agent name if this is a sub-agent's chat session
-                if not agent_name and agent_id_from_key == 'main':
-                    agent_name = 'main'
+                # Set agent name from the key
+                if not agent_name and agent_id_from_key:
+                    agent_name = agent_id_from_key.lower()
             else:
                 # Use friendly label parser for other sessions too
                 label = parse_friendly_session_label(key, s) if not label else label
+                # Set agent name from the key as fallback
+                if not agent_name and agent_id_from_key:
+                    agent_name = agent_id_from_key.lower()
             
             # Determine status
             status = 'done'

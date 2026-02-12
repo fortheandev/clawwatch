@@ -5,6 +5,32 @@ All notable changes to ClawWatch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.8.0] - 2026-02-12
+
+### Added
+- **Multi-Layout Visualization System** - 6 different ways to view your agent sessions!
+  - **Table** (default) - Traditional sortable table with pagination
+  - **Tree** - Hierarchical org-chart view (Gateway → Agents → Tasks)
+  - **Radial** - Sunburst visualization with Gateway at center
+  - **Network** - Force-directed graph with draggable nodes
+  - **Kanban** - Status-based columns (Running, Pending, Done, Failed)
+  - **Timeline** - Gantt-style horizontal timeline with swim lanes
+
+- **View Selector** - Segmented button control in filter bar
+  - Icons and labels for each view type
+  - Persists selection in localStorage
+  - Responsive design (icons-only on smaller screens)
+
+- **New JS Module** - `js/views.js` containing all visualization components
+  - Agent color coding matching mockup designs
+  - Status legends for all views
+  - Click-through to session details from any view
+
+### Changed
+- Refactored render method to support pluggable view layouts
+- Added `viewLayout` state to Dashboard class
+- Updated version to 2.8.0
+
 ## [2.7.3] - 2026-02-10
 
 ### Fixed

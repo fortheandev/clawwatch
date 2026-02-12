@@ -1,5 +1,5 @@
 {
-  "version": "2.7.3",
-  "updated": "2026-02-10",
-  "changelog": "Added witty tagline under ClawWatch title: 'Keep your claws on the pulse.'"
+  "version": "2.8.0",
+  "updated": "2026-02-12",
+  "changelog": "Added multi-layout visualization system: Table, Tree, Radial, Network, Kanban, and Timeline views with view selector dropdown."
 }

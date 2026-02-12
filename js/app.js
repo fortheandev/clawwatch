@@ -17,6 +17,7 @@ class Dashboard {
         this.isPaused = false;
         this.selectedSession = null;
         this.currentView = 'active'; // 'active' or 'archived'
+        this.viewLayout = 'table';    // 'table', 'tree', 'radial', 'network', 'kanban', 'timeline'
         
         // Base URL for API calls (handles /dashboard path for Tailscale)
         this.baseUrl = window.location.pathname.startsWith('/dashboard') ? '/dashboard' : '';
@@ -98,6 +99,9 @@ class Dashboard {
         // Apply lobster visibility setting on load
         this.applyLobsterVisibility();
         
+        // Initialize view layout selector
+        this.initViewLayoutSelector();
+        
         // Add logout button if auth is enabled
         this.initAuthUI();
         
@@ -166,6 +170,35 @@ class Dashboard {
         if (nodeFilterIconEl) {
             nodeFilterIconEl.innerHTML = Icons.get('server', 14);
         }
+    }
+    
+    /**
+     * Initialize view layout selector (Table, Tree, Radial, etc.)
+     */
+    initViewLayoutSelector() {
+        // Load saved layout preference
+        this.viewLayout = Components.getSavedViewLayout();
+        
+        // Find the filter bar to insert the view selector
+        const filterBar = document.querySelector('.filter-bar');
+        if (!filterBar) return;
+        
+        // Create and insert the view selector before filters
+        const viewSelector = Components.createViewLayoutSelector(
+            this.viewLayout,
+            (layout) => this.switchViewLayout(layout)
+        );
+        
+        // Insert at the beginning of the filter bar
+        filterBar.insertBefore(viewSelector, filterBar.firstChild);
+    }
+    
+    /**
+     * Switch the visualization layout
+     */
+    switchViewLayout(layout) {
+        this.viewLayout = layout;
+        this.render();
     }
     
     /**
@@ -743,7 +776,7 @@ class Dashboard {
     }
     
     /**
-     * Render the sessions table
+     * Render the sessions based on current view layout
      */
     render() {
         if (!this.elements.sessionsContainer) return;
@@ -760,6 +793,30 @@ class Dashboard {
         // Apply filters and sorting
         const filtered = this.applyFilters();
         
+        // Clear container
+        this.elements.sessionsContainer.innerHTML = '';
+        
+        // Render based on view layout
+        if (this.viewLayout === 'table') {
+            this.renderTableView(filtered);
+        } else {
+            this.renderAlternativeView(filtered);
+        }
+        
+        // Update session count in header
+        if (this.elements.sessionCount) {
+            const running = this.sessions.filter(s => s.status === 'running').length;
+            this.elements.sessionCount.textContent = `${this.sessions.length} sessions (${running} running)`;
+        }
+        
+        // Update filter count
+        this.updateFilterCount();
+    }
+    
+    /**
+     * Render table view with pagination
+     */
+    renderTableView(filtered) {
         // Calculate pagination
         const totalItems = filtered.length;
         this.pagination.totalPages = Math.ceil(totalItems / this.pagination.pageSize) || 1;
@@ -776,9 +833,6 @@ class Dashboard {
         const startIdx = (this.pagination.currentPage - 1) * this.pagination.pageSize;
         const endIdx = startIdx + this.pagination.pageSize;
         const pageItems = filtered.slice(startIdx, endIdx);
-        
-        // Clear and re-render
-        this.elements.sessionsContainer.innerHTML = '';
         
         const table = Components.sessionsTable(
             pageItems,
@@ -799,15 +853,49 @@ class Dashboard {
             (size) => this.changePageSize(size)
         );
         this.elements.sessionsContainer.appendChild(paginationEl);
-        
-        // Update session count in header
-        if (this.elements.sessionCount) {
-            const running = this.sessions.filter(s => s.status === 'running').length;
-            this.elements.sessionCount.textContent = `${this.sessions.length} sessions (${running} running)`;
+    }
+    
+    /**
+     * Render alternative visualization views (Tree, Radial, Network, Kanban, Timeline)
+     */
+    renderAlternativeView(sessions) {
+        // Use Views module if available
+        if (typeof Views === 'undefined') {
+            this.elements.sessionsContainer.innerHTML = `
+                <div class="view-error">
+                    <p>Views module not loaded. Please ensure views.js is included.</p>
+                </div>
+            `;
+            return;
         }
         
-        // Update filter count
-        this.updateFilterCount();
+        let viewElement;
+        const onSessionClick = (sessionId) => this.showSessionDetail(sessionId);
+        
+        switch (this.viewLayout) {
+            case 'tree':
+                viewElement = Views.renderTreeView(sessions, onSessionClick);
+                break;
+            case 'radial':
+                viewElement = Views.renderRadialView(sessions, onSessionClick);
+                break;
+            case 'network':
+                viewElement = Views.renderNetworkView(sessions, onSessionClick);
+                break;
+            case 'kanban':
+                viewElement = Views.renderKanbanView(sessions, onSessionClick);
+                break;
+            case 'timeline':
+                viewElement = Views.renderTimelineView(sessions, onSessionClick);
+                break;
+            default:
+                // Fallback to table
+                this.viewLayout = 'table';
+                this.renderTableView(sessions);
+                return;
+        }
+        
+        this.elements.sessionsContainer.appendChild(viewElement);
     }
     
     /**

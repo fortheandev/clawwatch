@@ -1268,6 +1268,91 @@ const Components = {
         });
     }
     
+    // ========================================
+    // View Layout Selector
+    // ========================================
+    
+    /**
+     * Available view layouts
+     */
+    viewLayouts: [
+        { value: 'table', label: 'Table', icon: '📊', description: 'Traditional sortable table' },
+        { value: 'tree', label: 'Tree', icon: '🌳', description: 'Hierarchical org-chart view' },
+        { value: 'radial', label: 'Radial', icon: '☀️', description: 'Sunburst visualization' },
+        { value: 'network', label: 'Network', icon: '🕸️', description: 'Force-directed graph' },
+        { value: 'kanban', label: 'Kanban', icon: '📋', description: 'Status columns board' },
+        { value: 'timeline', label: 'Timeline', icon: '📅', description: 'Gantt-style timeline' }
+    ],
+    
+    /**
+     * Create the view layout selector
+     * @param {string} currentLayout - Currently selected layout
+     * @param {Function} onChange - Callback when layout changes
+     * @returns {HTMLElement} View selector element
+     */
+    createViewLayoutSelector(currentLayout, onChange) {
+        const container = document.createElement('div');
+        container.className = 'view-layout-selector';
+        container.id = 'view-layout-selector';
+        
+        // Label
+        const label = document.createElement('span');
+        label.className = 'view-selector-label';
+        label.textContent = 'View:';
+        container.appendChild(label);
+        
+        // Button group
+        const buttonGroup = document.createElement('div');
+        buttonGroup.className = 'view-selector-buttons';
+        
+        this.viewLayouts.forEach(layout => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'view-selector-btn';
+            button.dataset.view = layout.value;
+            button.title = layout.description;
+            
+            if (layout.value === currentLayout) {
+                button.classList.add('active');
+            }
+            
+            button.innerHTML = `
+                <span class="view-btn-icon">${layout.icon}</span>
+                <span class="view-btn-label">${layout.label}</span>
+            `;
+            
+            button.addEventListener('click', () => {
+                // Update active state
+                buttonGroup.querySelectorAll('.view-selector-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                
+                // Save to localStorage
+                localStorage.setItem('clawwatchViewLayout', layout.value);
+                
+                // Trigger callback
+                if (onChange) {
+                    onChange(layout.value);
+                }
+            });
+            
+            buttonGroup.appendChild(button);
+        });
+        
+        container.appendChild(buttonGroup);
+        
+        return container;
+    },
+    
+    /**
+     * Get saved view layout from localStorage
+     * @returns {string} Layout name (default: 'table')
+     */
+    getSavedViewLayout() {
+        return localStorage.getItem('clawwatchViewLayout') || 'table';
+    }
+    
     // EXTENSION POINT: Add more components
     // filterPanel() { ... }
     // searchBar() { ... }
