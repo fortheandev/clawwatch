@@ -1266,7 +1266,7 @@ const Components = {
                 }
             }
         });
-    }
+    },
     
     // ========================================
     // View Layout Selector
