@@ -1269,23 +1269,23 @@ const Components = {
     },
     
     // ========================================
-    // View Layout Selector
+    // View Layout Selector (Dropdown)
     // ========================================
     
     /**
-     * Available view layouts
+     * Available view layouts with icons
      */
     viewLayouts: [
-        { value: 'table', label: 'Table', icon: '📊', description: 'Traditional sortable table' },
-        { value: 'tree', label: 'Tree', icon: '🌳', description: 'Hierarchical org-chart view' },
-        { value: 'radial', label: 'Radial', icon: '☀️', description: 'Sunburst visualization' },
-        { value: 'network', label: 'Network', icon: '🕸️', description: 'Force-directed graph' },
-        { value: 'kanban', label: 'Kanban', icon: '📋', description: 'Status columns board' },
-        { value: 'timeline', label: 'Timeline', icon: '📅', description: 'Gantt-style timeline' }
+        { value: 'table', label: 'Table', icon: '⊞', iconName: 'list', description: 'Traditional sortable table' },
+        { value: 'tree', label: 'Tree', icon: '⊟', iconName: 'gitBranch', description: 'Hierarchical org-chart view' },
+        { value: 'radial', label: 'Radial', icon: '◎', iconName: 'target', description: 'Sunburst visualization' },
+        { value: 'network', label: 'Network', icon: '◇', iconName: 'share2', description: 'Force-directed graph' },
+        { value: 'kanban', label: 'Kanban', icon: '▦', iconName: 'columns', description: 'Status columns board' },
+        { value: 'timeline', label: 'Timeline', icon: '▬', iconName: 'clock', description: 'Gantt-style timeline' }
     ],
     
     /**
-     * Create the view layout selector
+     * Create the view layout selector as a dropdown
      * @param {string} currentLayout - Currently selected layout
      * @param {Function} onChange - Callback when layout changes
      * @returns {HTMLElement} View selector element
@@ -1295,38 +1295,80 @@ const Components = {
         container.className = 'view-layout-selector';
         container.id = 'view-layout-selector';
         
-        // Label
-        const label = document.createElement('span');
-        label.className = 'view-selector-label';
-        label.textContent = 'View:';
-        container.appendChild(label);
+        // Find current layout
+        const currentOption = this.viewLayouts.find(l => l.value === currentLayout) || this.viewLayouts[0];
         
-        // Button group
-        const buttonGroup = document.createElement('div');
-        buttonGroup.className = 'view-selector-buttons';
+        // Get icons
+        const chevronIcon = typeof Icons !== 'undefined' ? Icons.get('chevronDown', 12) : '▼';
+        const viewIcon = typeof Icons !== 'undefined' && currentOption.iconName 
+            ? Icons.get(currentOption.iconName, 16) 
+            : currentOption.icon;
+        
+        // Create dropdown container
+        const dropdown = document.createElement('div');
+        dropdown.className = 'view-dropdown';
+        dropdown.id = 'view-dropdown';
+        
+        // Create trigger button
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'view-dropdown-trigger';
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.title = 'Change view layout';
+        trigger.innerHTML = `
+            <span class="view-dropdown-icon">${viewIcon}</span>
+            <span class="view-dropdown-label">${currentOption.label}</span>
+            <span class="view-dropdown-arrow">${chevronIcon}</span>
+        `;
+        
+        // Create menu
+        const menu = document.createElement('div');
+        menu.className = 'view-dropdown-menu';
+        menu.setAttribute('role', 'listbox');
         
         this.viewLayouts.forEach(layout => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'view-selector-btn';
-            button.dataset.view = layout.value;
-            button.title = layout.description;
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'view-dropdown-option';
+            option.dataset.view = layout.value;
+            option.setAttribute('role', 'option');
+            option.title = layout.description;
             
             if (layout.value === currentLayout) {
-                button.classList.add('active');
+                option.classList.add('selected');
             }
             
-            button.innerHTML = `
-                <span class="view-btn-icon">${layout.icon}</span>
-                <span class="view-btn-label">${layout.label}</span>
+            const optionIcon = typeof Icons !== 'undefined' && layout.iconName
+                ? Icons.get(layout.iconName, 16)
+                : layout.icon;
+            
+            option.innerHTML = `
+                <span class="view-option-icon">${optionIcon}</span>
+                <span class="view-option-label">${layout.label}</span>
+                <span class="view-option-desc">${layout.description}</span>
             `;
             
-            button.addEventListener('click', () => {
-                // Update active state
-                buttonGroup.querySelectorAll('.view-selector-btn').forEach(btn => {
-                    btn.classList.remove('active');
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Update selected state
+                menu.querySelectorAll('.view-dropdown-option').forEach(opt => {
+                    opt.classList.remove('selected');
                 });
-                button.classList.add('active');
+                option.classList.add('selected');
+                
+                // Update trigger
+                const newIcon = typeof Icons !== 'undefined' && layout.iconName
+                    ? Icons.get(layout.iconName, 16)
+                    : layout.icon;
+                trigger.querySelector('.view-dropdown-icon').innerHTML = newIcon;
+                trigger.querySelector('.view-dropdown-label').textContent = layout.label;
+                
+                // Close dropdown
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
                 
                 // Save to localStorage
                 localStorage.setItem('clawwatchViewLayout', layout.value);
@@ -1337,10 +1379,37 @@ const Components = {
                 }
             });
             
-            buttonGroup.appendChild(button);
+            menu.appendChild(option);
         });
         
-        container.appendChild(buttonGroup);
+        // Toggle dropdown on trigger click
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isOpen = dropdown.classList.toggle('open');
+            trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        
+        // Close on Escape
+        dropdown.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                dropdown.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.focus();
+            }
+        });
+        
+        dropdown.appendChild(trigger);
+        dropdown.appendChild(menu);
+        container.appendChild(dropdown);
         
         return container;
     },

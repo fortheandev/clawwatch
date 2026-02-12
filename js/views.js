@@ -24,31 +24,32 @@ const Views = {
     ],
     
     /**
-     * Agent colors matching the mockups
+     * Agent colors - Monochrome/terminal palette with subtle differentiation
+     * Think: server dashboards, GitHub, VS Code dark mode
      */
     agentColors: {
-        'ivy': '#a855f7',      // Purple - Main
-        'main': '#a855f7',
-        'stone': '#f97316',    // Orange - Ops
-        'ops': '#f97316',
-        'ash': '#14b8a6',      // Teal - Research
-        'research': '#14b8a6',
-        'luna': '#ec4899',     // Pink - Content
-        'content': '#ec4899',
-        'slate': '#6366f1',    // Indigo - Design
-        'design': '#6366f1',
-        'cron': '#eab308',     // Yellow - Cron
-        'default': '#3b82f6'   // Blue
+        'ivy': '#8b949e',      // Gray - Main
+        'main': '#8b949e',
+        'stone': '#7d8590',    // Darker Gray - Ops
+        'ops': '#7d8590',
+        'ash': '#6e7681',      // Muted Gray - Research
+        'research': '#6e7681',
+        'luna': '#848d97',     // Medium Gray - Content
+        'content': '#848d97',
+        'slate': '#9198a1',    // Light Gray - Design
+        'design': '#9198a1',
+        'cron': '#636e7b',     // Dim Gray - Cron
+        'default': '#58a6ff'   // Accent blue for fallback
     },
     
     /**
-     * Status colors
+     * Status colors - Muted terminal style
      */
     statusColors: {
-        'running': '#3b82f6',  // Blue
-        'done': '#22c55e',     // Green
-        'failed': '#ef4444',   // Red
-        'pending': '#f59e0b'   // Orange/Amber
+        'running': '#1f6feb',  // Dim blue
+        'done': '#238636',     // Dim green
+        'failed': '#da3633',   // Dim red
+        'pending': '#6e7681'   // Gray
     },
     
     /**
@@ -182,20 +183,32 @@ const Views = {
     
     /**
      * Render a task node in tree view
+     * Enhanced with: tokens, status, duration, model
      */
     renderTreeTask(session) {
         const statusColor = this.getStatusColor(session.status);
         const agentColor = this.getAgentColor(session.agentName);
-        const taskName = session.task ? Components.truncate(session.task, 20) : session.label;
-        const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k tok` : '';
+        const taskName = session.task ? Components.truncate(session.task, 25) : session.label;
+        const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k` : '—';
+        const duration = session.durationMs ? Components.formatDuration(session.durationMs) : '—';
+        const model = session.model ? session.model.split('/').pop() : '';
+        const status = (session.status || 'pending').toUpperCase();
+        const usagePct = session.usagePct || 0;
         
         return `
-            <div class="tree-task" data-session-id="${session.id}" style="--agent-color: ${agentColor}">
+            <div class="tree-task" data-session-id="${session.id}" style="--agent-color: ${agentColor}; --status-color: ${statusColor}">
+                <div class="task-header">
+                    <span class="task-status-badge" style="background-color: ${statusColor}">${status}</span>
+                    <span class="task-duration">${duration}</span>
+                </div>
                 <div class="task-content">
                     <span class="task-name">${Components.escapeHtml(taskName)}</span>
-                    <span class="task-tokens">${tokens}</span>
+                    <div class="task-metrics">
+                        <span class="task-tokens" title="Tokens used"><span class="metric-icon">⚡</span>${tokens}</span>
+                        ${model ? `<span class="task-model" title="Model"><span class="metric-icon">◈</span>${model}</span>` : ''}
+                    </div>
                 </div>
-                <span class="task-status" style="background-color: ${statusColor}" title="${session.status}"></span>
+                ${usagePct > 0 ? `<div class="task-progress"><div class="progress-fill" style="width: ${usagePct}%"></div></div>` : ''}
             </div>
         `;
     },
@@ -291,15 +304,24 @@ const Views = {
                 // Line from agent to task
                 linesHtml += this.renderRadialLine(agentX, agentY, taskX, taskY, color, 0.5);
                 
-                // Task node
-                const taskLabel = session.task ? Components.truncate(session.task, 8) : '';
+                // Task node - enhanced with detailed tooltip
+                const taskLabel = session.task ? Components.truncate(session.task, 12) : session.label;
+                const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k tokens` : '';
+                const duration = session.durationMs ? Components.formatDuration(session.durationMs) : '';
+                const model = session.model ? session.model.split('/').pop() : '';
+                const status = (session.status || 'pending').toUpperCase();
+                const tooltipParts = [taskLabel, status, tokens, duration, model].filter(Boolean);
+                const tooltip = tooltipParts.join(' | ');
+                
                 nodesHtml += `
                     <div class="radial-node radial-task" 
                          data-session-id="${session.id}"
+                         title="${Components.escapeHtml(tooltip)}"
                          style="left: ${taskX}%; top: ${taskY}%; 
                                 background-color: ${statusColor}; 
                                 width: ${size}px; height: ${size}px;">
                         <span class="node-label">${Components.escapeHtml(taskLabel)}</span>
+                        <span class="node-status">${status}</span>
                     </div>
                 `;
             });
@@ -416,7 +438,7 @@ const Views = {
                 </div>
             `;
             
-            // Task nodes
+            // Task nodes - enhanced with metrics
             const tasks = groups[agent];
             tasks.forEach((session, j) => {
                 const taskPos = positions.tasks[session.id];
@@ -424,17 +446,29 @@ const Views = {
                 
                 const statusColor = this.getStatusColor(session.status);
                 const size = this.getNodeSize(session.totalTokens);
+                const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k` : '';
+                const status = (session.status || 'pending').toUpperCase();
+                const taskLabel = session.task ? Components.truncate(session.task, 15) : session.label;
+                const duration = session.durationMs ? Components.formatDuration(session.durationMs) : '';
+                const model = session.model ? session.model.split('/').pop() : '';
+                const tooltipParts = [taskLabel, status, tokens ? `${tokens} tokens` : '', duration, model].filter(Boolean);
+                const tooltip = tooltipParts.join(' | ');
                 
                 // Edge from agent to task
                 edgesHtml += this.renderNetworkEdge(agentPos.x, agentPos.y, taskPos.x, taskPos.y, color, 0.4);
                 
-                // Task node
+                // Task node with status label
                 nodesHtml += `
                     <div class="network-node network-task" 
                          data-session-id="${session.id}"
+                         title="${Components.escapeHtml(tooltip)}"
                          style="left: ${taskPos.x}%; top: ${taskPos.y}%; 
                                 background-color: ${statusColor};
                                 width: ${size}px; height: ${size}px;">
+                        <span class="network-task-status">${status[0]}</span>
+                    </div>
+                    <div class="network-task-label" style="left: ${taskPos.x}%; top: calc(${taskPos.y}% + ${size/2 + 8}px);">
+                        ${tokens}
                     </div>
                 `;
             });
@@ -618,23 +652,50 @@ const Views = {
     },
     
     /**
-     * Render a Kanban card
+     * Render a Kanban card - Enhanced with full details
      */
     renderKanbanCard(session) {
         const agentColor = this.getAgentColor(session.agentName);
         const agentName = (session.agentName || 'Agent').charAt(0).toUpperCase() + (session.agentName || 'agent').slice(1);
-        const taskName = session.task ? Components.truncate(session.task, 30) : session.label;
-        const tokens = session.totalTokens ? `🔢 ${(session.totalTokens/1000).toFixed(1)}k tokens` : '';
+        const taskName = session.task ? Components.truncate(session.task, 40) : session.label;
+        const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k` : '—';
+        const duration = session.durationMs ? Components.formatDuration(session.durationMs) : '—';
+        const model = session.model ? session.model.split('/').pop() : '—';
         const usagePct = session.usagePct || 0;
+        const age = session.ageMs ? Components.formatAge(session.ageMs) : '';
+        const sizeFormatted = session.sizeFormatted || '';
         
         return `
             <div class="kanban-card" data-session-id="${session.id}" style="--agent-color: ${agentColor}">
-                <div class="card-agent-badge" style="background-color: ${agentColor}">${agentName}</div>
+                <div class="card-header">
+                    <div class="card-agent-badge" style="background-color: ${agentColor}">${agentName}</div>
+                    ${age ? `<span class="card-age">${age}</span>` : ''}
+                </div>
                 <div class="card-task">${Components.escapeHtml(taskName)}</div>
-                <div class="card-tokens">${tokens}</div>
+                <div class="card-metrics">
+                    <div class="card-metric">
+                        <span class="metric-label">Tokens</span>
+                        <span class="metric-value">${tokens}</span>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-label">Duration</span>
+                        <span class="metric-value">${duration}</span>
+                    </div>
+                    <div class="card-metric">
+                        <span class="metric-label">Model</span>
+                        <span class="metric-value metric-mono">${model}</span>
+                    </div>
+                    ${sizeFormatted ? `
+                    <div class="card-metric">
+                        <span class="metric-label">Size</span>
+                        <span class="metric-value">${sizeFormatted}</span>
+                    </div>
+                    ` : ''}
+                </div>
                 ${session.status === 'running' ? `
                     <div class="card-progress">
                         <div class="progress-bar" style="width: ${usagePct}%"></div>
+                        <span class="progress-label">${usagePct}%</span>
                     </div>
                 ` : ''}
             </div>
@@ -796,7 +857,7 @@ const Views = {
     },
     
     /**
-     * Render a timeline bar for a session
+     * Render a timeline bar for a session - Enhanced with inline details
      */
     renderTimelineBar(session, minTime, totalDuration, now) {
         const start = session.startedAt || (session.updatedAt - (session.durationMs || 60000));
@@ -804,21 +865,33 @@ const Views = {
         const duration = end - start;
         
         const left = ((start - minTime) / totalDuration) * 100;
-        const width = Math.max((duration / totalDuration) * 100, 1); // Min 1% width
+        const width = Math.max((duration / totalDuration) * 100, 2); // Min 2% width for visibility
         
         const statusColor = this.getStatusColor(session.status);
-        const taskName = session.task ? Components.truncate(session.task, 25) : session.label;
-        const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k` : '';
+        const taskName = session.task ? Components.truncate(session.task, 30) : session.label;
+        const tokens = session.totalTokens ? `${(session.totalTokens/1000).toFixed(1)}k tok` : '';
+        const durationStr = session.durationMs ? Components.formatDuration(session.durationMs) : '';
+        const model = session.model ? session.model.split('/').pop() : '';
+        const status = (session.status || 'pending').toUpperCase();
         const isRunning = session.status === 'running';
+        
+        // Detailed tooltip
+        const tooltipParts = [taskName, status, tokens, durationStr, model].filter(Boolean);
+        const tooltip = tooltipParts.join(' | ');
         
         return `
             <div class="timeline-bar ${isRunning ? 'running' : ''}" 
                  data-session-id="${session.id}"
+                 title="${Components.escapeHtml(tooltip)}"
                  style="left: ${left}%; width: ${width}%; background-color: ${statusColor};">
                 <span class="bar-label">${Components.escapeHtml(taskName)}</span>
+                <span class="bar-status">${status[0]}</span>
                 ${isRunning ? '<span class="bar-arrow">→</span>' : ''}
             </div>
-            <div class="bar-tokens" style="left: ${left + width/2}%">${tokens}</div>
+            <div class="bar-details" style="left: ${left}%; width: ${width}%;">
+                <span class="bar-tokens">${tokens}</span>
+                <span class="bar-duration">${durationStr}</span>
+            </div>
         `;
     },
     
