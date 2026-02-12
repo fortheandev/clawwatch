@@ -4091,6 +4091,16 @@ button {
     color: var(--text-primary);
 }
 
+.timeline-controls .btn-zoom:active {
+    transform: scale(0.95);
+}
+
+.timeline-controls .zoom-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    align-self: center;
+}
+
 /* ================================
    EXTENSION POINTS
    

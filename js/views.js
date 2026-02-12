@@ -7,6 +7,23 @@
 
 const Views = {
     /**
+     * Timeline zoom state - tracks current zoom level
+     * Levels: 'auto', '1h', '6h', '24h', '7d'
+     */
+    timelineZoom: 'auto',
+    
+    /**
+     * Timeline zoom options with labels
+     */
+    timelineZoomOptions: [
+        { value: 'auto', label: 'Auto' },
+        { value: '1h', label: '1 Hour' },
+        { value: '6h', label: '6 Hours' },
+        { value: '24h', label: '24 Hours' },
+        { value: '7d', label: '7 Days' }
+    ],
+    
+    /**
      * Agent colors matching the mockups
      */
     agentColors: {
@@ -629,9 +646,60 @@ const Views = {
     // ========================================
     
     /**
+     * Calculate time range based on zoom level
+     */
+    calculateTimeRange(sessions, zoomLevel) {
+        const now = Date.now();
+        const HOUR = 60 * 60 * 1000;
+        const DAY = 24 * HOUR;
+        
+        // For preset zoom levels, use fixed time windows ending at now
+        if (zoomLevel === '1h') {
+            return { minTime: now - HOUR, maxTime: now };
+        } else if (zoomLevel === '6h') {
+            return { minTime: now - 6 * HOUR, maxTime: now };
+        } else if (zoomLevel === '24h') {
+            return { minTime: now - DAY, maxTime: now };
+        } else if (zoomLevel === '7d') {
+            return { minTime: now - 7 * DAY, maxTime: now };
+        }
+        
+        // Auto mode: calculate from session data
+        let minTime = now;
+        let maxTime = now;
+        
+        sessions.forEach(s => {
+            const start = s.startedAt || (s.updatedAt - (s.durationMs || 0));
+            const end = s.updatedAt || now;
+            if (start < minTime) minTime = start;
+            if (end > maxTime) maxTime = end;
+        });
+        
+        return { minTime, maxTime };
+    },
+    
+    /**
+     * Get current zoom label for display
+     */
+    getCurrentZoomLabel() {
+        const option = this.timelineZoomOptions.find(o => o.value === this.timelineZoom);
+        return option ? option.label : 'Auto';
+    },
+    
+    /**
+     * Cycle to next zoom level
+     */
+    cycleZoomLevel() {
+        const currentIndex = this.timelineZoomOptions.findIndex(o => o.value === this.timelineZoom);
+        const nextIndex = (currentIndex + 1) % this.timelineZoomOptions.length;
+        this.timelineZoom = this.timelineZoomOptions[nextIndex].value;
+        return this.timelineZoom;
+    },
+    
+    /**
      * Render Gantt-style timeline view
      */
-    renderTimelineView(sessions, onSessionClick) {
+    renderTimelineView(sessions, onSessionClick, onZoomChange) {
         const container = document.createElement('div');
         container.className = 'view-timeline';
         
@@ -643,17 +711,9 @@ const Views = {
         const groups = this.groupByAgent(sessions);
         const agents = Object.keys(groups).sort();
         
-        // Calculate time range
+        // Calculate time range based on zoom level
         const now = Date.now();
-        let minTime = now;
-        let maxTime = now;
-        
-        sessions.forEach(s => {
-            const start = s.startedAt || (s.updatedAt - (s.durationMs || 0));
-            const end = s.updatedAt || now;
-            if (start < minTime) minTime = start;
-            if (end > maxTime) maxTime = end;
-        });
+        const { minTime, maxTime } = this.calculateTimeRange(sessions, this.timelineZoom);
         
         // Add padding to time range
         const timeRange = maxTime - minTime;
@@ -663,6 +723,9 @@ const Views = {
         
         // Generate time markers
         const timeMarkers = this.generateTimeMarkers(paddedMin, paddedMax);
+        
+        // Current zoom label
+        const zoomLabel = this.getCurrentZoomLabel();
         
         container.innerHTML = `
             <div class="timeline-container">
@@ -684,12 +747,13 @@ const Views = {
                 </div>
             </div>
             <div class="timeline-controls">
-                <button class="btn-zoom" data-zoom="in">🔍 Zoom</button>
+                <button class="btn-zoom" title="Click to cycle zoom levels">🔍 ${zoomLabel}</button>
+                <span class="zoom-hint">Click to change time range</span>
             </div>
             ${this.renderLegend()}
         `;
         
-        // Bind click events
+        // Bind click events for timeline bars
         container.querySelectorAll('.timeline-bar').forEach(bar => {
             bar.addEventListener('click', () => {
                 const sessionId = bar.dataset.sessionId;
@@ -698,6 +762,18 @@ const Views = {
                 }
             });
         });
+        
+        // Bind zoom button click - cycles through zoom levels and triggers re-render
+        const zoomBtn = container.querySelector('.btn-zoom');
+        if (zoomBtn) {
+            zoomBtn.addEventListener('click', () => {
+                this.cycleZoomLevel();
+                // Trigger re-render via callback or by re-rendering directly
+                if (onZoomChange) {
+                    onZoomChange(this.timelineZoom);
+                }
+            });
+        }
         
         return container;
     },

@@ -1,5 +1,5 @@
 {
-  "version": "2.8.0",
+  "version": "2.8.1",
   "updated": "2026-02-12",
-  "changelog": "Added multi-layout visualization system: Table, Tree, Radial, Network, Kanban, and Timeline views with view selector dropdown."
+  "changelog": "Fixed Timeline view zoom button - now cycles through time ranges (Auto, 1h, 6h, 24h, 7d)."
 }

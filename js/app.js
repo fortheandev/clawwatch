@@ -886,7 +886,9 @@ class Dashboard {
                 viewElement = Views.renderKanbanView(sessions, onSessionClick);
                 break;
             case 'timeline':
-                viewElement = Views.renderTimelineView(sessions, onSessionClick);
+                // Pass zoom change callback to re-render timeline when zoom changes
+                const onZoomChange = () => this.render();
+                viewElement = Views.renderTimelineView(sessions, onSessionClick, onZoomChange);
                 break;
             default:
                 // Fallback to table
