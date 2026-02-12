@@ -179,18 +179,18 @@ class Dashboard {
         // Load saved layout preference
         this.viewLayout = Components.getSavedViewLayout();
         
-        // Find the filter bar to insert the view selector
-        const filterBar = document.querySelector('.filter-bar');
-        if (!filterBar) return;
+        // Find the header controls to insert the view selector
+        const headerControls = document.querySelector('.header-controls');
+        if (!headerControls) return;
         
-        // Create and insert the view selector before filters
+        // Create the view selector
         const viewSelector = Components.createViewLayoutSelector(
             this.viewLayout,
             (layout) => this.switchViewLayout(layout)
         );
         
-        // Insert at the beginning of the filter bar
-        filterBar.insertBefore(viewSelector, filterBar.firstChild);
+        // Insert at the beginning of header controls (before pause/refresh/settings)
+        headerControls.insertBefore(viewSelector, headerControls.firstChild);
     }
     
     /**
